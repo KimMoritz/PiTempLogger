@@ -7,6 +7,7 @@ import com.pi4j.component.temperature.TemperatureSensor;
 import com.pi4j.io.w1.W1Master;
 import com.pi4j.temperature.TemperatureScale;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 public class TempLogger {
     @Autowired
     TemperatureRepository temperatureRepository;
+    @Value("${interval}")
+    Long interval;
 
     @PostConstruct
     public void getTemperature() throws InterruptedException {
@@ -27,8 +30,6 @@ public class TempLogger {
         System.out.println(w1Master);
 
             for (TemperatureSensor device : w1Master.getDevices(TemperatureSensor.class)) {
-                System.out.printf("%-20s %3.1f°C %3.1f°F\n", device.getName(), device.getTemperature(),
-                        device.getTemperature(TemperatureScale.CELSIUS));
                 Double d = device.getTemperature(TemperatureScale.CELSIUS);
 
                 TemperatureEntity temperatureEntity = new TemperatureEntity();
@@ -36,11 +37,9 @@ public class TempLogger {
                 temperatureEntity.setTime(Timestamp.valueOf(LocalDateTime.now()));
 
                 temperatureRepository.save(temperatureEntity);
-
-                System.out.println(d);
-
+                System.out.println("Logged temp");
             }
-            Thread.sleep(60*1000L);
+            Thread.sleep(interval);
         }
 
     }

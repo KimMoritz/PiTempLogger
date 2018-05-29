@@ -1,4 +1,6 @@
+# Remove .template and fill in values below. Mysql on your raspberry pi is required.
 spring.jpa.hibernate.ddl-auto=
 spring.datasource.url=
 spring.datasource.username=
 spring.datasource.password=
+interval=                   #how often measures are recorded
